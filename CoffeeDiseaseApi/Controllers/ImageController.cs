@@ -43,11 +43,11 @@ namespace CoffeeDiseaseApi.Controllers
     }
     public record Response
     {
-        public string ClassName { get; init; }
-        public object Score { get; init; }
+        public string ClassName { get; init; } = null!;
+        public object Score { get; init; } = null!;
     }
     public class ImageInputDto
     {
-        public IFormFile Image { get; set; }
+        public IFormFile Image { get; set; } = null!;
     }
 }
