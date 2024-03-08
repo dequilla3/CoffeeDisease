@@ -1,0 +1,6 @@
+@CoffeeDiseaseApi_HostAddress = http://localhost:5145
+
+GET {{CoffeeDiseaseApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
