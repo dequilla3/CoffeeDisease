@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CoffeeDiseaseApi.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeDiseaseApi.Controllers
 {
@@ -11,27 +12,20 @@ namespace CoffeeDiseaseApi.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Predict([FromForm] ImageInputDto input)
         {
-            Console.WriteLine("Reach");
             try {
                 if (input == null || input.Image == null || input.Image.Length == 0)
                 {
-                    Console.WriteLine("Test");
                     return BadRequest("Image file is required.");
                 }
 
-                // Read image bytes
-                byte[] imageBytes;
-                using (var memoryStream = new MemoryStream())
-                {
-                    await input.Image.CopyToAsync(memoryStream);
-                    imageBytes = memoryStream.ToArray();
-                }
-                // Now you can use 'imageBytes' for further processing
+                var imageService = new ImageService();
+                var resizedImage = await imageService.ResizeImageAsync(input.Image, 256, 256);
+
 
                 //Load sample data
                 CoffeeDiseaseModel.ModelInput sampleData = new()
                 {
-                    ImageSource = imageBytes,
+                    ImageSource = resizedImage,
                 };
 
                 //Load model and predict output
