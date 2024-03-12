@@ -1,4 +1,5 @@
-﻿using CoffeeDiseaseApi.Services;
+﻿using CoffeeDiseaseApi.DTOs;
+using CoffeeDiseaseApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeDiseaseApi.Controllers
@@ -7,7 +8,6 @@ namespace CoffeeDiseaseApi.Controllers
     [Route("api/[controller]")]
     public class ImageController : ControllerBase
     {
-   
         [HttpPost("predict")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Predict([FromForm] ImageInputDto input)
@@ -30,23 +30,21 @@ namespace CoffeeDiseaseApi.Controllers
 
                 //Load model and predict output
                 var result = CoffeeDiseaseModel.Predict(sampleData);
+                var results = CoffeeDiseaseModel.PredictAllLabels(sampleData);
 
-                return Ok(new Response { ClassName = result.PredictedLabel, Score = Math.Round(result.Score.Max() * 100, 2) });
+                List<Model> model = [];
+
+                foreach (var res in results)
+                {
+                    model.Add(new Model() { ClassName = res.Key, Score  = Math.Round(res.Value * 100, 2) });
+                }
+
+                return Ok(new Response() { Models = model});
             }
             catch(Exception ex) {
                 return BadRequest(ex.Message);
             }
         }
     }
-    public record Response
-    {
-        public string ClassName { get; init; } = null!;
-        public object Score { get; init; } = null!;
-    }
-
-    public class ImageInputDto
-    {
-        public IFormFile Image { get; set; } = null!;
-    }
-
+ 
 }
